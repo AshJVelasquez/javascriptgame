@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Ashley's Crossing Game</title>
+    <style type="text/css">
+        canvas{
+            border: 2px solid black;
+            background-color:dodgerblue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crossing Game</h1>
+    <h2>By Ashley Velasquez</h2>
+    <canvas id="ashCanvas" width="1000" height="500"></canvas"> 
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("ashCanvas");
+        var ctx = canvas.getContext("2d"); //needed to specify we are working in 2-D
+
+        let screenWidth = 1000;
+        let screenHeight = 500;
+        let width = 50;
+
+        class GameCharacter {
+            constructor(x, y, width, height, color, speed) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.speed = speed;
+                this.maxSpeed = 4;
+            }
+            moveVertically() {
+                if (this.y > screenHeight - 100 || (this.y<50)) {
+                    this.speed = -this.speed;
+                }
+                this.y += this.speed;
+            }
+            moveHorizontally() {
+                if (this.x > screenWidth - 100 || this.x < 50) {
+                    this.speed = -this.speed;
+                }
+                this.x += this.speed;
+            }
+        }
+
+        var enemies = [
+            new GameCharacter(200, 225, width, width, "rgb(255,255,30)",2),
+            new GameCharacter(450, screenHeight-100, width, width, "rgb(255,255,30)",3),
+            new GameCharacter(700, 50, width, width, "rgb(255,255,30)",4),
+        ];
+
+        var player = new GameCharacter(50, 225, width, width, "rgb(255,255,255)", 0);
+
+        
+        document.onkeydown = function (event) {
+            let keyPressed = event.keyCode; 
+            if (keyPressed == 39) {
+                player.speed = player.maxSpeed; 
+            }
+            if (keyPressed == 37) {
+                player.speed = -player.maxSpeed;
+            }
+        }
+        document.onkeyup = function (event) {
+            player.speed = 0;
+        }
+
+        var draw = function () {
+            ctx.clearRect(0, 0, screenWidth, screenHeight); //works well for simply games VS complex
+            enemies.forEach(function (element) {
+                ctx.fillStyle = element.color;
+                ctx.fillRect(element.x, element.y, element.width, element.height);
+            }); 
+            //need to addcharacter
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        //Now, we want to create an update function to simulate movement
+        var update = function () {
+            enemies.forEach(function (element) {
+                element.moveVertically();
+            });
+            player.moveHorizontally();
+        }
+
+        //This part is regarding the fps in gaming
+        //referred to as a 'game loop'
+        var step = function () {
+            update();
+            draw();
+            window.requestAnimationFrame(step); //goes onto the next loop iteration. simulates while loop behavior
+        }
+
+        step(); //this will start off every game logic
+    </script>
+</body>
+</html>
