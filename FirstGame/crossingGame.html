@@ -55,6 +55,8 @@
 
         var player = new GameCharacter(50, 225, width, width, "rgb(255,255,255)", 0);
 
+        var endGoal = new GameCharacter(930, 0, width, screenHeight, "rgb(1,1,1)", 0);
+
         
         document.onkeydown = function (event) {
             let keyPressed = event.keyCode; 
@@ -69,6 +71,14 @@
             player.speed = 0;
         }
 
+        //COLLISION PART
+        var checkCollisions = function (rect1, rect2) {
+            var xOverLap = Math.abs(rect1.x - rect2.x) <= Math.max(rect1.width, rect2.width);
+            var yOverLap = Math.abs(rect1.y - rect2.y) <= Math.max(rect1.height, rect2.height);
+            return xOverLap && yOverLap;
+        }
+        //END COLLISION PART
+
         var draw = function () {
             ctx.clearRect(0, 0, screenWidth, screenHeight); //works well for simply games VS complex
             enemies.forEach(function (element) {
@@ -78,13 +88,24 @@
             //need to addcharacter
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            //adding goal
+            ctx.fillStyle = endGoal.color;
+            ctx.fillRect(endGoal.x, endGoal.y, endGoal.width, endGoal.height);
         }
 
         //Now, we want to create an update function to simulate movement
         var update = function () {
             enemies.forEach(function (element) {
+                if (checkCollisions(player, element)) {
+                    alert("you ded");
+                }
                 element.moveVertically();
             });
+            if (checkCollisions(player, endGoal)) {
+                alert("you weiner!");
+            }
+
             player.moveHorizontally();
         }
 
