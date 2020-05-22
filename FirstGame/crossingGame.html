@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -22,6 +22,7 @@
         let screenWidth = 1000;
         let screenHeight = 500;
         let width = 50;
+		var isGameLive = true; //new variable in this lesson
 
         class GameCharacter {
             constructor(x, y, width, height, color, speed) {
@@ -98,24 +99,33 @@
         var update = function () {
             enemies.forEach(function (element) {
                 if (checkCollisions(player, element)) {
-                    alert("you ded");
+                    endGameLogic("You ded!")
                 }
                 element.moveVertically();
             });
             if (checkCollisions(player, endGoal)) {
-                alert("you weiner!");
+                endGameLogic("You win!")
             }
 
             player.moveHorizontally();
         }
-
+		
+		//End game logic
+		var endGameLogic = function(text){
+			isGameLive = false;
+			alert(text);
+			window.location ="";
+		}
+		
         //This part is regarding the fps in gaming
         //referred to as a 'game loop'
         var step = function () {
             update();
             draw();
+			if(isGameLive){
             window.requestAnimationFrame(step); //goes onto the next loop iteration. simulates while loop behavior
         }
+		}
 
         step(); //this will start off every game logic
     </script>
