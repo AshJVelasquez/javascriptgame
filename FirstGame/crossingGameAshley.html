@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Ashley's Crossing Game</title>
+    <style type="text/css">
+        canvas {
+            border: 2px solid black;
+            background-color: dodgerblue;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Crossing Game</h1>
+    <h2>By Ashley Velasquez</h2>
+    <canvas id="ashCanvas" width='1000' height='500'></canvas> 
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("ashCanvas");
+        var ctx = canvas.getContext("2d"); //needed to specify we are working in 2-D
+
+        let screenWidth = 1000;
+        let screenHeight = 500;
+        let width = 50;
+		var isGameLive = true;
+
+        class GameCharacter {
+            constructor(x, y, width, height, color, speed) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.speed = speed;
+                this.maxSpeed = 4;
+            }
+            moveVertically() {
+                if (this.y > screenHeight - 100 || this.y<50) {
+                    this.speed = -this.speed;
+                }
+                this.y += this.speed;
+            }
+            moveHorizontally() {
+                this.x += this.speed;
+            }
+        }
+		//Game Character Objects
+        var enemies = [
+            new GameCharacter(200, 225, width, width, "rgb(255,255,30)",2),
+            new GameCharacter(450, screenHeight-100, width, width, "rgb(255,255,30)",3),
+            new GameCharacter(700, 50, width, width, "rgb(255,255,30)",4),
+        ];
+
+        var player = new GameCharacter(50, 225, width, width, "rgb(255,255,255)", 0);
+        var endGoal = new GameCharacter(930, 0, width, screenHeight, "rgb(1,1,1)", 0);
+		////Adding the Sprites
+		var sprites = {};
+		
+		//Loading the sprites
+		var loadSprites = function(){
+			sprites.player = new Image();
+			sprites.player.src = 'images/hero.png';
+			
+			sprites.background = new Image();
+            sprites.background.src = 'images/floor.png';
+			
+			sprites.enemy = new Image();
+            sprites.enemy.src = 'images/enemy.png';
+			
+			sprites.endGoal = new Image();
+            sprites.endGoal.src = 'images/chest.png';
+        }
+		
+		//Detecting user input
+        document.onkeydown = function (event) {
+            let keyPressed = event.keyCode;
+            if (keyPressed == 39) {
+                player.speed = player.maxSpeed;
+            }
+            else if (keyPressed == 37) {
+                player.speed = -player.maxSpeed;
+            }
+        };
+        document.onkeyup = function (event) {
+            player.speed = 0;
+        }
+
+        //COLLISION PART
+        var checkCollisions = function (rect1, rect2) {
+            var xOverLap = Math.abs(rect1.x - rect2.x) <= Math.max(rect1.width, rect2.width);
+            var yOverLap = Math.abs(rect1.y - rect2.y) <= Math.max(rect1.height, rect2.height);
+            return xOverLap && yOverLap;
+        }
+        //END COLLISION PART
+
+		//Drawing on Canvas
+
+        var draw = function () {
+            ctx.clearRect(0, 0, screenWidth, screenHeight); //works well for simply games VS complex
+            
+			//Background			
+			ctx.drawImage(sprites.background,0,0);
+			//Player
+			ctx.drawImage(sprites.player,player.x,player.y);
+			//Goal
+			ctx.drawImage(sprites.endGoal,endGoal.x,endGoal.y);
+			
+            enemies.forEach(function(element) {
+                ctx.drawImage(sprites.enemy, element.x, element.y);
+            });
+        }
+
+		//Movement Part
+        var update = function () {
+            enemies.forEach(function (element) {
+                if (checkCollisions(player, element)) {
+                    endGameLogic("You ded!");
+                }
+                element.moveVertically();
+            });
+
+            if (checkCollisions(player, endGoal)) {
+                endGameLogic("You win!");
+            }
+
+            player.moveHorizontally();
+        }
+		
+		//End Game Logic
+		var endGameLogic = function(text){
+			isGameLive = false;
+			alert(text);
+			window.location ="";
+		}
+		
+        //'Game Loop'
+        var step = function () {
+            update();
+            draw();
+
+			if (isGameLive) {
+                window.requestAnimationFrame(step);
+        	}
+		}
+        loadSprites();
+        step();
+    </script>
+</body>
+</html>
