@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -24,7 +24,10 @@
         let screenWidth = 1000;
         let screenHeight = 500;
         let width = 50;
-		var isGameLive = true;
+        var isGameLive = true;
+
+        var isRightKeyPressed = false;
+        var isLeftKeyPressed = false;
 
         class GameCharacter {
             constructor(x, y, width, height, color, speed) {
@@ -75,17 +78,40 @@
 		
 		//Detecting user input
         document.onkeydown = function (event) {
-            let keyPressed = event.keyCode;
+            var keyPressed = event.keyCode;
             if (keyPressed == 39) {
+                isRightKeyPressed = true;
                 player.speed = player.maxSpeed;
             }
             else if (keyPressed == 37) {
+                isLeftKeyPressed = true;
                 player.speed = -player.maxSpeed;
             }
         };
+
+
         document.onkeyup = function (event) {
-            player.speed = 0;
-        }
+            //player.speed = 0;
+            var keyUp = event.keyCode;
+            if (keyUp == 39) {
+                isRightKeyPressed = false;
+                if (isLeftKeyPressed) {
+                    player.speed = -player.maxSpeed;
+                }
+                else {
+                    player.speed = 0;
+                }
+            }
+            else if (keyUp == 37) {
+                isLeftKeyPressed = false;
+                if (isRightKeyPressed) {
+                    player.speed = player.maxSpeed;
+                }
+                else {
+                    player.speed = 0;
+                }
+            }
+        };
 
         //COLLISION PART
         var checkCollisions = function (rect1, rect2) {
